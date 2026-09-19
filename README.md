@@ -1,110 +1,210 @@
-# SQL Natural
+# Gerador de Consultas SQL com Llama 3.1
 
-Projeto para conversão de perguntas formuladas em linguagem natural em consultas SQL.
+Projeto de fine-tuning de um modelo de linguagem para geração de consultas SQL a partir de perguntas formuladas em linguagem natural.
 
-## Status
+O objetivo é explorar a aplicação de modelos de linguagem abertos em uma tarefa de **Text-to-SQL**, utilizando o Llama 3.1 8B e técnicas de ajuste fino para adaptar o modelo ao domínio de geração de consultas SQL.
 
-Em desenvolvimento.
+## Sobre o projeto
 
-Esta versão corresponde à etapa preliminar do projeto, dedicada à preparação do ambiente e ao carregamento local de um modelo Llama 3.1 8B em formato quantizado. A implementação da preparação dos dados, do ajuste do modelo e da interface de consulta será incorporada nas próximas versões.
+A proposta é permitir que uma pessoa formule uma pergunta em linguagem natural, como:
 
-## Objetivo
+> Quais pessoas têm mais de 56 anos?
 
-Desenvolver uma solução capaz de interpretar solicitações em linguagem natural e produzir consultas SQL correspondentes, reduzindo a necessidade de conhecimento avançado de SQL para consultas sobre bases de dados relacionais.
+e que o modelo seja capaz de produzir uma consulta SQL correspondente, considerando o contexto fornecido.
 
-A proposta considera execução local do modelo, evitando o envio das informações consultadas para serviços externos.
+O projeto utiliza um modelo de linguagem aberto como ponto de partida e realiza um processo de fine-tuning utilizando um conjunto de exemplos contendo contexto, pergunta e resposta esperada.
 
-## Tecnologias
-
-- Python
-- Llama 3.1 8B
-- Unsloth
-- PyTorch
-- Hugging Face Transformers
-- TRL
-- PEFT
-- bitsandbytes
-- xformers
+Além do treinamento e da inferência no ambiente de desenvolvimento, o modelo resultante foi disponibilizado no Hugging Face e também preparado para utilização local em formato GGUF.
 
 ## Modelo
 
-A etapa atual utiliza o modelo:
+O projeto utiliza como modelo-base o:
 
-`unsloth/Meta-Llama-3.1-8B`
+**Llama 3.1 8B**
 
-O carregamento é realizado com quantização em 4 bits para reduzir o consumo de memória durante a execução.
+O modelo treinado neste projeto está disponível no Hugging Face:
 
-## Estrutura
+**[fabricioribeiro/llama-3.1-8B-texto-para-sql](https://huggingface.co/fabricioribeiro/llama-3.1-8B-texto-para-sql)**
+
+A versão quantizada em formato GGUF pode ser utilizada localmente com o Ollama.
+
+## Tecnologias utilizadas
+
+* Python
+* Llama 3.1 8B
+* Hugging Face Transformers
+* Unsloth
+* PyTorch
+* TRL
+* PEFT
+* bitsandbytes
+* xformers
+* Google Colab
+* Ollama
+* GGUF
+
+## Fine-tuning
+
+O treinamento utiliza o modelo Llama 3.1 8B carregado com quantização em 4 bits, reduzindo o consumo de memória durante o processo.
+
+Os exemplos utilizados no treinamento são organizados a partir de três informações principais:
+
+* **Contexto:** informações sobre a estrutura ou domínio dos dados;
+* **Pergunta:** solicitação formulada em linguagem natural;
+* **Resposta:** consulta SQL esperada.
+
+Essas informações são transformadas em um formato de prompt utilizado durante o treinamento.
+
+De forma simplificada:
 
 ```text
-sql-natural/
+Contexto + Pergunta → Consulta SQL
+```
+
+O processo de fine-tuning busca adaptar o comportamento do modelo para essa tarefa específica.
+
+## Estrutura do projeto
+
+```text
+gerador-consultas-sql-com-Llama3/
+│
+├── Aula_1_Finetuning_de_LLMs_abertas.ipynb
+├── Finetuning_de_LLMs_abertas.ipynb
 ├── sql-natural.ipynb
 ├── requirements.txt
 ├── README.md
-├── LICENSE
-└── .gitignore
+└── LICENSE
 ```
 
-## Requisitos
+### Notebook principal
 
-A etapa atual foi preparada para execução em ambiente com GPU compatível com o carregamento do modelo quantizado.
+O arquivo utilizado como principal referência para o desenvolvimento atual é:
 
-Recomenda-se utilizar um ambiente virtual ou uma sessão isolada para instalar as dependências.
+[`Finetuning_de_LLMs_abertas.ipynb`](./Finetuning_de_LLMs_abertas.ipynb)
 
-## Instalação
+Ele reúne as etapas relacionadas ao carregamento do modelo, preparação dos dados, configuração do treinamento e utilização do modelo.
 
-Clone o repositório:
+Os demais notebooks representam etapas anteriores ou materiais utilizados durante o desenvolvimento do projeto.
+
+## Execução
+
+### 1. Clonar o repositório
 
 ```bash
-git clone URL_DO_SEU_REPOSITORIO
-cd sql-natural
+git clone https://github.com/fabriciosribeiro/gerador-consultas-sql-com-Llama3.git
+cd gerador-consultas-sql-com-Llama3
 ```
 
-Crie um ambiente virtual:
+### 2. Criar um ambiente virtual
 
 ```bash
-python -m venv .venv
+python3 -m venv .venv
 ```
 
-Ative o ambiente no Linux:
+### 3. Ativar o ambiente virtual
+
+No Linux:
 
 ```bash
 source .venv/bin/activate
 ```
 
-Instale as dependências:
+### 4. Instalar as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Execução
+### 5. Executar o notebook
 
-Abra o notebook:
+O treinamento e as etapas de experimentação podem ser executados a partir do notebook:
 
 ```text
-sql-natural.ipynb
+Finetuning_de_LLMs_abertas.ipynb
 ```
 
-Execute as células na ordem apresentada.
+O notebook foi desenvolvido para utilização em ambiente com suporte a GPU compatível com o processo de treinamento do modelo.
 
-A etapa preliminar realiza:
+## Utilização do modelo com Ollama
 
-1. instalação das dependências necessárias;
-2. importação dos componentes do Unsloth;
-3. definição do modelo;
-4. carregamento do Llama 3.1 8B com quantização em 4 bits.
+Uma versão quantizada do modelo foi disponibilizada em formato GGUF para utilização local.
 
-## Próximas etapas
+Com o Ollama instalado, o modelo pode ser executado utilizando:
 
-- preparação do conjunto de dados;
-- definição do formato de treinamento;
-- ajuste do modelo para geração de SQL;
-- avaliação das consultas produzidas;
-- criação de uma interface para entrada de perguntas;
-- integração com uma base de dados de demonstração;
-- documentação dos resultados e limitações.
+```bash
+ollama run hf.co/fabricioribeiro/llama-3.1-8B-texto-para-sql:Q4_K_M
+```
+
+Depois de carregado, é possível fornecer perguntas em linguagem natural para testar a geração de consultas SQL.
+
+Exemplo:
+
+```text
+Liste todas as pessoas com idade superior a 56 anos.
+```
+
+O modelo deve utilizar o conhecimento adquirido durante o fine-tuning para produzir uma consulta SQL correspondente ao contexto apresentado.
+
+## Hugging Face
+
+O modelo treinado está disponível em:
+
+https://huggingface.co/fabricioribeiro/llama-3.1-8B-texto-para-sql
+
+A publicação do modelo permite que o resultado do treinamento seja reutilizado e testado fora do ambiente original de desenvolvimento.
+
+## Objetivos de aprendizagem
+
+Este projeto foi desenvolvido também como estudo prático dos principais componentes envolvidos no desenvolvimento e adaptação de aplicações baseadas em LLMs:
+
+* utilização de modelos de linguagem abertos;
+* carregamento de modelos com quantização;
+* preparação de conjuntos de dados para fine-tuning;
+* construção de prompts para tarefas específicas;
+* fine-tuning de modelos de linguagem;
+* utilização de Unsloth;
+* utilização de Transformers e TRL;
+* utilização de PEFT;
+* geração de consultas SQL a partir de linguagem natural;
+* publicação de modelos no Hugging Face;
+* conversão e utilização de modelos em formato GGUF;
+* execução local de LLMs utilizando Ollama.
+
+## Limitações atuais
+
+O projeto ainda está em desenvolvimento.
+
+Entre os pontos que podem ser aprimorados estão:
+
+* avaliação quantitativa da qualidade das consultas SQL;
+* criação de um conjunto de testes independente;
+* comparação entre o modelo-base e o modelo após fine-tuning;
+* avaliação da execução das consultas geradas;
+* tratamento de diferentes estruturas de banco de dados;
+* melhoria da consistência das respostas;
+* criação de uma interface para interação com o modelo;
+* integração com um banco de dados de demonstração;
+* documentação de exemplos de entrada e saída;
+* análise de desempenho e consumo de recursos durante a inferência.
+
+Os resultados de desempenho do modelo não são apresentados neste README enquanto não houver uma avaliação sistemática que permita medi-los de forma adequada.
+
+## Próximos passos
+
+As próximas etapas previstas para o projeto incluem:
+
+* aprimorar o conjunto de dados;
+* revisar o formato dos prompts;
+* realizar novos experimentos de fine-tuning;
+* criar uma avaliação específica para Text-to-SQL;
+* testar diferentes estratégias de inferência;
+* disponibilizar uma interface para consulta;
+* integrar o modelo a uma base de dados de demonstração;
+* documentar exemplos de consultas geradas;
+* avaliar a utilização do modelo em ambiente local.
 
 ## Licença
 
 Este projeto está disponível sob a licença MIT.
+
+Consulte o arquivo [`LICENSE`](./LICENSE) para obter os detalhes da licença.
